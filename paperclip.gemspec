@@ -9,12 +9,12 @@ exclude_files = ["test/s3.yml", "test/debug.log", "test/paperclip.db", "test/doc
 end.flatten
 
 spec = Gem::Specification.new do |s|
-  s.name              = "paperclip"
+  s.name              = "twm_paperclip"
   s.version           = Paperclip::VERSION
   s.author            = "Jon Yurek"
   s.email             = "jyurek@thoughtbot.com"
   s.homepage          = "http://www.thoughtbot.com/projects/paperclip"
-  s.description       = "Easy upload management for ActiveRecord"
+  s.description       = "Paperclip patched to provide proper S3 / PDF thumbnail mimetypes"
   s.platform          = Gem::Platform::RUBY
   s.summary           = "File attachments as attributes for ActiveRecord"
   s.files             = include_files - exclude_files

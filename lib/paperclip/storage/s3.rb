@@ -94,8 +94,8 @@ module Paperclip
         end
       end
 
-      def expiring_url(time = 3600)
-        AWS::S3::S3Object.url_for(path, bucket_name, :expires_in => time )
+      def expiring_url(time = 3600, style = default_style)
+        AWS::S3::S3Object.url_for(path(style), bucket_name, :expires_in => time )
       end
 
       def bucket_name
@@ -147,21 +147,28 @@ module Paperclip
             log("saving #{path(style)}")
             # Nasty hack, thumbnails for PDFs generated in jpg/png/gif are NOT the content_type of the original file!
             # Override the content_type based on these extensions.
-            content_type = case(file.path)
-              when /.jpg$/
-                "image/jpeg"
-              when /.png$/
-                "image/png"
-              when /.gif$/
-                "image/gif"
-              else
-                instance_read(:content_type)
+            access = @s3_permissions
+            unless style == :default_style
+              content_type = case(file.path)
+                when /.jpg$/
+                  "image/jpeg"
+                  access = :public_read
+                when /.png$/
+                  "image/png"
+                  access = :public_read
+                when /.gif$/
+                  "image/gif"
+                  access = :public_read
+                else
+                  instance_read(:content_type)
+              end
             end
             AWS::S3::S3Object.store(path(style),
                                     file,
                                     bucket_name,
-                                    {:content_type => content_type,#instance_read(:content_type),
-                                     :access => @s3_permissions,
+                                    {
+                                      :content_type => content_type,#instance_read(:content_type),
+                                      :access => access,
                                     }.merge(@s3_headers))
           rescue AWS::S3::NoSuchBucket => e
             create_bucket
