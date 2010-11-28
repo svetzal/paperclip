@@ -145,10 +145,22 @@ module Paperclip
         @queued_for_write.each do |style, file|
           begin
             log("saving #{path(style)}")
+            # Nasty hack, thumbnails for PDFs generated in jpg/png/gif are NOT the content_type of the original file!
+            # Override the content_type based on these extensions.
+            content_type = case(file.path)
+              when /.jpg$/
+                "image/jpeg"
+              when /.png$/
+                "image/png"
+              when /.gif$/
+                "image/gif"
+              else
+                instance_read(:content_type)
+            end
             AWS::S3::S3Object.store(path(style),
                                     file,
                                     bucket_name,
-                                    {:content_type => instance_read(:content_type),
+                                    {:content_type => content_type,#instance_read(:content_type),
                                      :access => @s3_permissions,
                                     }.merge(@s3_headers))
           rescue AWS::S3::NoSuchBucket => e
