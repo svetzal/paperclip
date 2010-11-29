@@ -1,3 +1,22 @@
+=TWM Paperclip
+
+The TWM Paperclip branch is intended to make life using the S3 storage engine
+easier.
+
+In attempting to use it on one of my personal projects, I found two showstopper
+issues that I had to get around:
+
+  1. When storing JPG thumbnails of PDF documents, the JPGs were uploaded to
+     S3 with the mime_type "application/pdf", which breaks behaviour in many
+     browsers and is semantically incorrect.
+
+  2. When these PDFs were protected documents (stored with S3 under a secure
+     URL), I needed the thumbnails to be uploaded to S3 as publicly accessible
+
+This patch is not elegant, and should not be contributed as it is to Paperclip
+core. However it does illustrate some key use-cases that should be considered
+for core Paperclip.
+
 =Paperclip
 
 Paperclip is intended as an easy file attachment library for ActiveRecord. The
